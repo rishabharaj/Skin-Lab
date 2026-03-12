@@ -30,6 +30,7 @@ import AdminReels from "./pages/admin/AdminReels";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminInventory from "./pages/admin/AdminInventory";
 import NotFound from "./pages/NotFound";
+import { isSupabaseConfigured } from "./integrations/supabase/client";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,11 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <CartProvider>
+        {!isSupabaseConfigured && (
+          <div className="fixed top-0 left-0 right-0 z-[200] bg-destructive text-destructive-foreground text-xs sm:text-sm px-3 py-2 text-center">
+            Missing deployment env vars: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in Vercel.
+          </div>
+        )}
         <Toaster />
         <Sonner />
         <BrowserRouter>
