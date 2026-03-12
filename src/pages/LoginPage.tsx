@@ -27,10 +27,12 @@ const LoginPage = () => {
   }, [user, loading, navigate, redirectTo]);
 
   const handleGoogleLogin = async () => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && redirectTo !== "/") {
       window.sessionStorage.setItem(AUTH_REDIRECT_KEY, redirectTo);
     }
-    const callbackUrl = `${window.location.origin}/login${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`;
+    // Always redirect back to /login so the PKCE callback is handled correctly.
+    // The in-app redirect target is read from sessionStorage after auth completes.
+    const callbackUrl = `${window.location.origin}/login`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {

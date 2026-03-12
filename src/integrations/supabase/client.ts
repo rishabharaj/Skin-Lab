@@ -22,9 +22,11 @@ export const supabase = createClient<Database>(
   SUPABASE_URL || fallbackUrl,
   SUPABASE_PUBLISHABLE_KEY || fallbackAnonKey,
   {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
+    auth: {
+      storage: localStorage,
+      persistSession: true,
+      autoRefreshToken: true,
+      flowType: "pkce",
+    },
   }
-});
+);
