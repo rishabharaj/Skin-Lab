@@ -223,6 +223,7 @@ const DeviceSkinsPage = () => {
                   {activeSkin ? (
                     <SkinPreview
                       maskUrl={model.mockup_url}
+                      templateConfig={(model as any).mask_templates?.config}
                       skinImage={activeSkin.textureImage}
                       skinColor={activeSkin.color}
                       modelName={model.name}

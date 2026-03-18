@@ -10,6 +10,7 @@ import {
   Ticket,
   Package,
   Star,
+  PenTool,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -30,6 +31,7 @@ const menuItems = [
   { title: "Analytics", url: "/admin", icon: BarChart3 },
   { title: "Devices", url: "/admin/devices", icon: Smartphone },
   { title: "Mask Templates", url: "/admin/masks", icon: Layers },
+  { title: "Mask Editor", url: "/admin/mask-editor", icon: PenTool },
   { title: "Skins", url: "/admin/skins", icon: Palette },
   { title: "Home Page Skins", url: "/admin/home-skins", icon: Star },
   { title: "Video Reels", url: "/admin/reels", icon: Film },

@@ -26,6 +26,7 @@ import AdminHomeSkins from "./pages/admin/AdminHomeSkins";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminMasks from "./pages/admin/AdminMasks";
+import AdminMaskEditor from "./pages/admin/AdminMaskEditor";
 import AdminReels from "./pages/admin/AdminReels";
 import AdminCoupons from "./pages/admin/AdminCoupons";
 import AdminInventory from "./pages/admin/AdminInventory";
@@ -70,6 +71,8 @@ const App = () => (
               <Route path="home-skins" element={<AdminHomeSkins />} />
               <Route path="orders" element={<AdminOrders />} />
               <Route path="masks" element={<AdminMasks />} />
+              <Route path="mask-editor" element={<AdminMaskEditor />} />
+              <Route path="mask-editor/:templateId" element={<AdminMaskEditor />} />
               <Route path="reels" element={<AdminReels />} />
               <Route path="coupons" element={<AdminCoupons />} />
               <Route path="inventory" element={<AdminInventory />} />

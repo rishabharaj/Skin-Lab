@@ -14,6 +14,16 @@ export type DbModel = {
   name: string;
   image_url: string | null;
   mockup_url: string | null;
+  mask_template_id: string | null;
+};
+
+export type DbMaskTemplate = {
+  id: string;
+  name: string;
+  description: string | null;
+  brand_hint: string | null;
+  config: Record<string, unknown>;
+  preview_url: string | null;
 };
 
 export const useDeviceBrands = () =>
@@ -78,11 +88,11 @@ export const useDeviceModel = (slug?: string) =>
       if (!slug) return null;
       const { data, error } = await supabase
         .from("device_models")
-        .select("*, device_brands(*)")
+        .select("*, device_brands(*), mask_templates(*)")
         .eq("slug", slug)
         .single();
       if (error) throw error;
-      return data as DbModel & { device_brands: DbBrand };
+      return data as DbModel & { device_brands: DbBrand; mask_templates: DbMaskTemplate | null };
     },
     enabled: !!slug,
   });
