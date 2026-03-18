@@ -140,6 +140,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string | null
+          mask_template_id: string | null
           mockup_url: string | null
           name: string
           slug: string
@@ -149,6 +150,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          mask_template_id?: string | null
           mockup_url?: string | null
           name: string
           slug: string
@@ -158,6 +160,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string | null
+          mask_template_id?: string | null
           mockup_url?: string | null
           name?: string
           slug?: string
@@ -170,7 +173,47 @@ export type Database = {
             referencedRelation: "device_brands"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "device_models_mask_template_id_fkey"
+            columns: ["mask_template_id"]
+            isOneToOne: false
+            referencedRelation: "mask_templates"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      mask_templates: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          brand_hint: string | null
+          config: Json
+          preview_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          brand_hint?: string | null
+          config: Json
+          preview_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          brand_hint?: string | null
+          config?: Json
+          preview_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       order_items: {
         Row: {

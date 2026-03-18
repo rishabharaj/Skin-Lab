@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import type { MaskTemplateConfig } from "@/lib/maskTemplateTypes";
+import { renderMaskToCanvas, canvasToDataUrl } from "@/lib/maskRenderer";
 
 interface SkinPreviewProps {
   /** URL to the phone mask PNG (white = skin area, transparent = cutouts) */
   maskUrl: string | null;
+  /** Parametric template config — used as runtime fallback when maskUrl is null */
+  templateConfig?: MaskTemplateConfig | null;
   /** URL or imported path to the skin texture image */
   skinImage: string | null;
   /** Fallback color if no skin image */
@@ -19,9 +23,11 @@ interface SkinPreviewProps {
  * - Transparent pixels → cutouts (camera, edges, etc.)
  *
  * Uses CSS `mask-image` for GPU-accelerated compositing.
+ * Falls back to Canvas-rendered mask when only templateConfig is available.
  */
 const SkinPreview = ({
   maskUrl,
+  templateConfig,
   skinImage,
   skinColor = "#333",
   modelName = "Phone",
@@ -30,8 +36,21 @@ const SkinPreview = ({
   const [maskLoaded, setMaskLoaded] = useState(false);
   const [maskError, setMaskError] = useState(false);
 
-  // If no mask, show a simple rounded rect fallback
-  if (!maskUrl || maskError) {
+  // Generate mask data URL from template config (runtime fallback)
+  const generatedMaskUrl = useMemo(() => {
+    if (maskUrl || !templateConfig) return null;
+    try {
+      const canvas = renderMaskToCanvas(templateConfig);
+      return canvasToDataUrl(canvas);
+    } catch {
+      return null;
+    }
+  }, [maskUrl, templateConfig]);
+
+  const effectiveMaskUrl = maskUrl || generatedMaskUrl;
+
+  // If no mask at all (no URL, no template), show a simple rounded rect fallback
+  if (!effectiveMaskUrl || (maskUrl && maskError)) {
     return (
       <div className={`relative w-full h-full flex items-center justify-center ${className}`}>
         <div
@@ -46,18 +65,24 @@ const SkinPreview = ({
     );
   }
 
+  // Generated masks (data URLs) are already loaded — skip preload
+  const isDataUrl = effectiveMaskUrl.startsWith("data:");
+  const isReady = isDataUrl || maskLoaded;
+
   return (
     <div className={`relative w-full h-full flex items-center justify-center ${className}`}>
-      {/* Preload mask to detect load/error */}
-      <img
-        src={maskUrl}
-        alt=""
-        className="hidden"
-        onLoad={() => setMaskLoaded(true)}
-        onError={() => setMaskError(true)}
-      />
+      {/* Preload remote mask to detect load/error */}
+      {!isDataUrl && (
+        <img
+          src={effectiveMaskUrl}
+          alt=""
+          className="hidden"
+          onLoad={() => setMaskLoaded(true)}
+          onError={() => setMaskError(true)}
+        />
+      )}
 
-      {maskLoaded && (
+      {isReady && (
         <div className="relative w-full h-full flex items-center justify-center">
           {/* Skin texture clipped by mask */}
           <div
@@ -67,8 +92,8 @@ const SkinPreview = ({
               backgroundColor: !skinImage ? skinColor : undefined,
               backgroundSize: "cover",
               backgroundPosition: "center",
-              WebkitMaskImage: `url(${maskUrl})`,
-              maskImage: `url(${maskUrl})`,
+              WebkitMaskImage: `url(${effectiveMaskUrl})`,
+              maskImage: `url(${effectiveMaskUrl})`,
               WebkitMaskSize: "contain",
               maskSize: "contain" as any,
               WebkitMaskRepeat: "no-repeat",
@@ -82,7 +107,7 @@ const SkinPreview = ({
         </div>
       )}
 
-      {!maskLoaded && !maskError && (
+      {!isReady && !maskError && (
         <div className="w-48 h-80 rounded-[2rem] bg-secondary animate-pulse" />
       )}
     </div>
